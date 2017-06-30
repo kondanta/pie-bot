@@ -3,6 +3,7 @@ import json
 import logging
 import traceback
 import sys
+import discord
 
 # TODO command.on.error eklenecek.
 
@@ -25,13 +26,14 @@ log.addHandler(handler)
 
 
 bot = commands.Bot(command_prefix='.', description='Pie Bot', pm_help=None)
-
+bot.change_status(discord.Status("dnd"))
 
 @bot.event
 async def on_ready():
     print('Logged in')
     print(bot.user.name)
     print(bot.user.id)
+    await bot.change_presence(game=discord.Game(name='Under Development'), status=discord.Status('dnd'))
 
 
 @bot.event
