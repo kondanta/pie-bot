@@ -27,27 +27,27 @@ class Mal:
         r = requests.get(conn)
         soup = bs(r.content, "html.parser")
 
-        data = soup.find_all('div', attrs={'class': 'updates anime'})
+        data = soup.find_all('div', attrs={'class': 'updates anime'})  # need to specify for the image loop
 
         # takes the anime's name with it's mal link
-        for link in data:
-            try:
-                for item in link.find_all('div', attrs={'class': 'data'}):
-                    x = item.findNext('a').text
-                    y = item.findNext('a')['href']
-                    links.append(y)
-                    titles.append(x)
-            except TypeError:
-                await self.bot.say("Skip")
+        # for link in data:
+        try:
+            for item in soup.find_all('div', attrs={'class': 'data'}, limit=3):
+                x = item.findNext('a').text
+                y = item.findNext('a')['href']
+                links.append(y)
+                titles.append(x)
+        except TypeError:
+            await self.bot.say("Skip")
 
         # takes the rest of the info such as status, how many episodes watched.
-        for value in data:
-            try:
-                for item in value.find_all('div', attrs={'class': 'fn-grey2'}):
-                    x = item.text
-                    episode_infos_dump.append(x)
-            except TypeError:
-                await self.bot.say("skip")
+        # for value in data:
+        try:
+            for item in soup.find_all('div', attrs={'class': 'fn-grey2'}, limit=3):
+                x = item.text
+                episode_infos_dump.append(x)
+        except TypeError:
+            await self.bot.say("skip")
 
         # takes the anime's image. later printed in thumbnail
         for images in data:
@@ -64,6 +64,8 @@ class Mal:
 
         def listintolist(s):  # makes array [[x][y],[y][z]]
             return s.split(" ")
+
+        # TODO try to get rid of these 2 list belove
 
         ep_inf = [splitter(i) for i in episode_infos_dump]
         episode_info = [listintolist(i) for i in ep_inf]
