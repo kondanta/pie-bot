@@ -22,7 +22,7 @@ class Mal:
         if ctx.invoked_subcommand is None:
             await self.bot.say('https://myanimelist.net/profile/kondanta')
 
-    @mal.command(pass_context=True)
+    @mal.command(pass_context=True, usage=".mal lastanime <mal_user_name>")
     async def lastanime(self, ctx, arg: str):
         # base definitions.
         conn = PROFILE_URL + arg
@@ -108,7 +108,7 @@ class Mal:
         await self.bot.say(embed=embed2)
         await self.bot.say(embed=embed3)
 
-    @mal.command(pass_context=True,)
+    @mal.command(pass_context=True, usage=".mal anime <anime name>")
     async def anime(self, ctx, *args):
         # typedefs
         title_list = []
@@ -163,22 +163,42 @@ class Mal:
             start_date.append(i.text)
         for i in soup.find_all('end_date'):
             end_date.append(i.text)
-        try:
-            text = synop_list[0].replace('<br />', ' ').replace('&#039;', "'").replace('[i]', '*').replace('[/i]', '*').replace('&mdash;', '—').replace('&quot;', '"')
-            embed = discord.Embed(title=' ', description=text, color=0x0000ff, timestamp=ctx.message.timestamp)
-            embed.set_author(name=title_list[0], icon_url=images[0])
-            embed.add_field(name="*Type*", value=tur[0])
-            embed.add_field(name="*Episodes*", value=ep[0])
-            embed.add_field(name="*Status*", value=status[0])
-            embed.add_field(name="*Score*", value=score[0])
-            embed.add_field(name="*Link*", value=anime_id[0])
-            embed.set_thumbnail(url=images[0])
 
-            msg ='Aired on ' + start_date[0] + ' to ' + end_date[0]
-            embed.set_footer(text=msg)
+        # message that printed with the list
+        msg = "**Please chose one, by its number..**\n"
+        msg += "\n ".join(['{} - {}'.format(n + 1, title_list[n]) for n in range(0, len(title_list))])
+
+        await self.bot.say(msg)
+
+        try:
+            # it waits for the response after printing the table
+            resp = await self.bot.wait_for_message(author=ctx.message.author, timeout=5)
+            # resp returns with message object, so I'm changing it's type to string
+            # and final part is, converting it to int, -1 for the numbering order
+            entry = int(resp.content) - 1
+            text = synop_list[0].replace('<br />', ' ').replace('&#039;', "'").replace('[i]', '*').replace('[/i]',
+                                                                                                           '*').replace(
+                '&mdash;', '—').replace('&quot;', '"')
+            embed = discord.Embed(title=' ', description=text, color=0x0000ff, timestamp=ctx.message.timestamp)
+            embed.set_author(name=title_list[entry], icon_url=images[entry])
+            embed.add_field(name="*Type*", value=tur[entry])
+            embed.add_field(name="*Episodes*", value=ep[entry])
+            embed.add_field(name="*Status*", value=status[entry])
+            embed.add_field(name="*Score*", value=score[entry])
+            embed.add_field(name="*Link*", value=anime_id[entry])
+            embed.set_thumbnail(url=images[entry])
+
+            footer_msg = 'Aired on ' + start_date[entry] + ' to ' + end_date[entry]
+            embed.set_footer(text=footer_msg)
             await self.bot.say(embed=embed)
         except IndexError:
             await self.bot.say("Index Error!!")
+        except ValueError:
+            await self.bot.say("Please enter a number")
+        except UnboundLocalError:
+            await self.bot.say("Please enter a number")
+        except AttributeError:
+            await self.bot.say("**Time is up! Please try again... :cry:**")
 
 
 def setup(bot):
