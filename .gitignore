@@ -1,3 +1,7 @@
 Pie.log
 
 info.json
+
+.idea/
+
+__pycache__/
