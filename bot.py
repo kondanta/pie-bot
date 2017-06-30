@@ -8,7 +8,8 @@ extension = [
             'cogs.echo',
             'cogs.utils.modfuncs',
             'cogs.react',
-            'cogs.utils.purge'
+            'cogs.utils.purge',
+            'cogs.info'
 ]
 
 bot = commands.Bot(command_prefix='.', description='Pie Bot')
