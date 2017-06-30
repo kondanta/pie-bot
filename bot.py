@@ -28,6 +28,7 @@ log.addHandler(handler)
 bot = commands.Bot(command_prefix='.', description='Pie Bot', pm_help=None)
 bot.change_status(discord.Status("dnd"))
 
+
 @bot.event
 async def on_ready():
     print('Logged in')
@@ -63,7 +64,7 @@ async def on_member_leave(member):
 
 
 @bot.command()
-async def load(extension_name : str):
+async def load(extension_name: str):
     try:
         bot.load_extension(extension_name)
     except (AttributeError, ImportError) as e:
@@ -73,7 +74,7 @@ async def load(extension_name : str):
 
 
 @bot.command()
-async def unload(extension_name : str):
+async def unload(extension_name: str):
     """Unloads an extension."""
     bot.unload_extension(extension_name)
     await bot.say("{} unloaded.".format(extension_name))
