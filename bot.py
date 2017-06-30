@@ -6,6 +6,8 @@ import json
 extension = [
             'cogs.counter',
             'cogs.echo',
+            'cogs.utils.modfuncs',
+            'cogs.react'
 ]
 
 bot = commands.Bot(command_prefix='.', description='Pie Bot')
