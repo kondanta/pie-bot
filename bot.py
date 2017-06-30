@@ -5,6 +5,7 @@ import json
 
 extension = [
             'cogs.counter',
+            'cogs.echo',
 ]
 
 bot = commands.Bot(command_prefix='.', description='Pie Bot')
@@ -17,7 +18,7 @@ async def on_ready():
     print(bot.user.id)
 
 
-@bot.commands()
+@bot.command()
 async def load(extension_name : str):
     try:
         bot.load_extension(extension_name)
@@ -32,6 +33,10 @@ async def unload(extension_name : str):
     """Unloads an extension."""
     bot.unload_extension(extension_name)
     await bot.say("{} unloaded.".format(extension_name))
+
+f = open('info.json')
+data = json.load(f)
+token = data['token']
 
 
 if __name__ == "__main__":

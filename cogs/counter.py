@@ -15,7 +15,7 @@ class MsgCounter:
                 user = ctx.message.mentions[0]
             counter = 0
             tmp = await (self.bot.send_message(ctx.message.channel, 'Calculating messages...'))
-            async for log in self.bot.logs_from(limit=ctx.message.channel,):
+            async for log in self.bot.logs_from(ctx.message.channel, limit=100):
                 if log.author == user:
                     counter += 1
 
