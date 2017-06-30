@@ -65,7 +65,7 @@ class Mal:
         def listintolist(s):  # makes array [[x][y],[y][z]]
             return s.split(" ")
 
-        # TODO try to get rid of these 2 list belove
+        # TODO try to get rid of these 2 list below
 
         ep_inf = [splitter(i) for i in episode_infos_dump]
         episode_info = [listintolist(i) for i in ep_inf]
