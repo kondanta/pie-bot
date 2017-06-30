@@ -2,8 +2,15 @@ from discord.ext import commands
 from bs4 import BeautifulSoup as bs
 import requests
 import discord
+import json
+
+f = open('info.json')
+data = json.load(f)
+credentials = data['user'] + ":" + data['pass']
 
 PROFILE_URL = "https://myanimelist.net/profile/"
+MAL_API_ANIME = "https://" + credentials + "@myanimelist.net/api/anime/search.xml?q="
+ANIME_LINK = 'https://myanimelist.net/anime/'
 
 
 class Mal:
@@ -100,6 +107,78 @@ class Mal:
         await self.bot.say(embed=embed)
         await self.bot.say(embed=embed2)
         await self.bot.say(embed=embed3)
+
+    @mal.command(pass_context=True,)
+    async def anime(self, ctx, *args):
+        # typedefs
+        title_list = []
+        synop_list = []
+        status = []
+        score = []
+        images = []
+        tur = []
+        ep = []
+        start_date = []
+        end_date = []
+        anime_id = []
+
+        # checks if the argument is one , or multiple
+        if len(args) >= 2:
+            list(args)
+            x = '+'.join(args)
+            conn = MAL_API_ANIME + x
+        elif len(args) < 1:
+            await self.bot.say("Please enter an anime name")
+            return -1
+        else:
+            list(args)
+            x = args[0]
+            conn = MAL_API_ANIME + x
+
+        r = requests.get(conn)
+        soup = bs(r.content, 'lxml')
+
+        # loops for gathering related informations
+        for i in soup.find_all('title'):
+            title_list.append(i.text)
+
+        for y in soup.find_all('synopsis'):
+            synop_list.append(y.text)
+
+        for i in soup.find_all('image'):
+            images.append(i.text)
+
+        for i in soup.find_all('id'):
+            msg = ANIME_LINK + i.text
+            anime_id.append(msg)
+        for i in soup.find_all('type'):
+            tur.append(i.text)
+        for i in soup.find_all('score'):
+            score.append(i.text)
+        for i in soup.find_all('status'):
+            status.append(i.text)
+        for i in soup.find_all('status'):
+            ep.append(i.text)
+        for i in soup.find_all('start_date'):
+            start_date.append(i.text)
+        for i in soup.find_all('end_date'):
+            end_date.append(i.text)
+        try:
+            text = synop_list[0].replace('<br />', ' ').replace('&#039;', "'").replace('[i]', '*').replace('[/i]', '*').replace('&mdash;', '—').replace('&quot;', '"')
+            embed = discord.Embed(title=' ', description=text, color=0x0000ff, timestamp=ctx.message.timestamp)
+            embed.set_author(name=title_list[0], icon_url=images[0])
+            embed.add_field(name="*Type*", value=tur[0])
+            embed.add_field(name="*Episodes*", value=ep[0])
+            embed.add_field(name="*Status*", value=status[0])
+            embed.add_field(name="*Score*", value=score[0])
+            embed.add_field(name="*Link*", value=anime_id[0])
+            embed.set_thumbnail(url=images[0])
+
+            msg ='Aired on ' + start_date[0] + ' to ' + end_date[0]
+            embed.set_footer(text=msg)
+            await self.bot.say(embed=embed)
+        except IndexError:
+            await self.bot.say("Index Error!!")
 
 
 def setup(bot):
