@@ -22,93 +22,90 @@ class Mal:
         if ctx.invoked_subcommand is None:
             await self.bot.say('https://myanimelist.net/profile/kondanta')
 
-    @mal.command(pass_context=True, usage=".mal lastanime <mal_user_name>")
-    async def lastanime(self, ctx, arg: str):
-        # base definitions.
+    @mal.command(pass_context=True)
+    async def profile(self, ctx, arg: str):
         conn = PROFILE_URL + arg
-        titles = []
-        links = []
-        img_list = []
-        episode_infos_dump = []
+        anime_manga_info = []  # collecting anime manga, first 6 elements
+        user_img = []
+        means = []
+        spend_days = []
+        anime_manga_status = []
 
         r = requests.get(conn)
+
         soup = bs(r.content, "html.parser")
-
-        data = soup.find_all('div', attrs={'class': 'updates anime'})  # need to specify for the image loop
-
-        # takes the anime's name with it's mal link
-        # for link in data:
         try:
-            for item in soup.find_all('div', attrs={'class': 'data'}, limit=3):
-                x = item.findNext('a').text
-                y = item.findNext('a')['href']
-                links.append(y)
-                titles.append(x)
+            for i in soup.find_all('div', attrs={'class': 'data'}, limit=6):
+                x = i.findNext('a').text
+                anime_manga_info.append(x)
+            for i in soup.find_all('div', attrs={'class': 'user-image mb8'}):
+                img = i.find('img')['src']
+                user_img.append(img)
+            for i in soup.find_all('div', attrs={'class': 'di-tc ar pr8 fs12 fw-b'}):
+                x = i.text
+                means.append(x)
+            for i in soup.find_all('div', attrs={'class': 'di-tc al pl8 fs12 fw-b'}):
+                x = i.text
+                spend_days.append(x)
+            for i in soup.find_all('div', attrs={'class': 'fn-grey2'}, limit=6):
+                x = i.text
+                anime_manga_status.append(x)
+
+            # 2 basic function for handling the array.
+            def splitter(s):  # makes array ['xy', 'yz']
+                return ' '.join(s.split())
+
+            def listintolist(s):  # makes array [[x][y],[y][z]]
+                return s.split(" ")
+
+            means = [listintolist(i) for i in means]
+            spend_days = [listintolist(i) for i in spend_days]
+
+            test_list = [splitter(i) for i in anime_manga_status]
+            anime_manga_status = [listintolist(i) for i in test_list]
+
+            anime_msg = '{}:  {},  {}.  {} : {}\n' \
+                        '{}:  {},  {}.  {} : {}\n' \
+                        '{}:  {},  {}.  {} : {}\n'.format(anime_manga_info[0], anime_manga_status[0][0],
+                                                     anime_manga_status[0][1], anime_manga_status[0][3],
+                                                     anime_manga_status[0][4], anime_manga_info[1],
+                                                     anime_manga_status[1][0], anime_manga_status[1][1],
+                                                     anime_manga_status[1][3], anime_manga_status[1][4],
+                                                     anime_manga_info[2], anime_manga_status[2][0],
+                                                     anime_manga_status[2][1], anime_manga_status[2][3],
+                                                     anime_manga_status[2][4])
+
+            manga_msg = '{}:  {},  {}.  {} : {}\n' \
+                        '{}:  {},  {}.  {} : {}\n' \
+                        '{}:  {},  {}.  {} : {}\n'.format(anime_manga_info[3], anime_manga_status[3][0],
+                                                     anime_manga_status[3][1], anime_manga_status[3][3],
+                                                     anime_manga_status[3][4], anime_manga_info[4],
+                                                     anime_manga_status[4][0], anime_manga_status[4][1],
+                                                     anime_manga_status[4][3], anime_manga_status[4][4],
+                                                     anime_manga_info[5], anime_manga_status[5][0],
+                                                     anime_manga_status[5][1], anime_manga_status[5][3],
+                                                     anime_manga_status[5][4])
+
+            embed = discord.Embed(title="", description="Additional information", color=0x0000ff,
+                                  timestamp=ctx.message.timestamp)
+            embed.set_author(name=arg, url=conn,
+                             icon_url='https://myanimelist.cdn-dena.com/img/sp/icon/apple-touch-icon-256.png')
+            embed.set_thumbnail(url=user_img[0])
+            embed.add_field(name="Days spent on Anime", value=spend_days[0][1])
+            embed.add_field(name="Days spent on Manga", value=spend_days[1][1])
+            embed.add_field(name="Mean Anime Score", value=means[0][2])
+            embed.add_field(name="Mean Manga Score", value=means[1][2])
+            embed.add_field(name="**Latest Anime Updates**", value=anime_msg, inline=False)
+            embed.add_field(name="**Latest Manga Updates**", value=manga_msg, inline=False)
+            embed.add_field(name="Link", value=conn, inline=False)
+            embed.set_footer(text='Provided by Pie Kek')
+            await self.bot.say(embed=embed)
         except TypeError:
-            await self.bot.say("Skip")
+            await self.bot.say("Skipping")
+        except IndexError:
+            await self.bot.say("I cannot find the user")
 
-        # takes the rest of the info such as status, how many episodes watched.
-        # for value in data:
-        try:
-            for item in soup.find_all('div', attrs={'class': 'fn-grey2'}, limit=3):
-                x = item.text
-                episode_infos_dump.append(x)
-        except TypeError:
-            await self.bot.say("skip")
-
-        # takes the anime's image. later printed in thumbnail
-        for images in data:
-            try:
-                for item in images.find_all('img'):
-                    x = item.get('src')
-                    img_list.append(x)
-            except TypeError:
-                await self.bot.say('skip')
-
-        # 2 basic function for handling the array.
-        def splitter(s):  # makes array ['xy', 'yz']
-            return ' '.join(s.split())
-
-        def listintolist(s):  # makes array [[x][y],[y][z]]
-            return s.split(" ")
-
-        # TODO try to get rid of these 2 list below
-
-        ep_inf = [splitter(i) for i in episode_infos_dump]
-        episode_info = [listintolist(i) for i in ep_inf]
-
-        # first embed for the first anine
-        embed = discord.Embed(title=' ', description="Details", color=0x0000ff, timestamp=ctx.message.timestamp)
-        embed.set_author(name=titles[0], url=links[0],
-                         icon_url='https://myanimelist.cdn-dena.com/img/sp/icon/apple-touch-icon-256.png')
-        embed.add_field(name='Status', value=episode_info[0][0])
-        embed.add_field(name='Score', value=episode_info[0][4])
-        embed.set_thumbnail(url=img_list[0])
-        embed.set_footer(text="Provided by Pie Kek")
-
-        # second embed for the second anime
-        embed2 = discord.Embed(title=' ', description="Details", color=0x0000ff, timestamp=ctx.message.timestamp)
-        embed2.set_author(name=titles[1], url=links[1],
-                          icon_url='https://myanimelist.cdn-dena.com/img/sp/icon/apple-touch-icon-256.png')
-        embed2.add_field(name='Status', value=episode_info[1][0])
-        embed2.add_field(name='Score', value=episode_info[1][4])
-        embed2.set_thumbnail(url=img_list[1])
-        embed2.set_footer(text="Provided by Pie Kek")
-
-        # third embed for the third anime
-        embed3 = discord.Embed(title=' ', description="Details", color=0x0000ff, timestamp=ctx.message.timestamp)
-        embed3.set_author(name=titles[2], url=links[2],
-                          icon_url='https://myanimelist.cdn-dena.com/img/sp/icon/apple-touch-icon-256.png')
-        embed3.add_field(name='Status', value=episode_info[2][0])
-        embed3.add_field(name='Score', value=episode_info[2][4])
-        embed3.set_thumbnail(url=img_list[2])
-        embed3.set_footer(text="Provided by Pie Kek")
-
-        await self.bot.say(embed=embed)
-        await self.bot.say(embed=embed2)
-        await self.bot.say(embed=embed3)
-
-    @mal.command(pass_context=True, usage=".mal anime <anime name>")
+    @mal.command(pass_context=True, usage=".mal anime anime name")
     async def anime(self, ctx, *args):
         # typedefs
         title_list = []

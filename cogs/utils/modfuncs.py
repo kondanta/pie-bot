@@ -2,6 +2,7 @@ from discord.ext import commands
 from cogs.utils import check
 import discord
 
+
 class ModFuncs:
 
     def __init__(self, bot):
