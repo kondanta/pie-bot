@@ -5,10 +5,13 @@ A simple bot
 
 - [x] Basic commands
 - [x] Admin commands
-- [x] MyAnimeList last 3 anime -parser-
-- [ ] MyAnimeList last 3 manga -parser-
+
+~~- [x] MyAnimeList last 3 anime -parser-~~
+
+~~- [ ] MyAnimeList last 3 manga -parser-~~
+- [x] MyAnimeList profile
 - [x] MyAnimeList API -> anime search
-- [ ] MyAnimeList API -> manga search
+- [x] MyAnimeList API -> manga search
 - [ ] Reminder
 - [ ] DB integration
 	- [ ] Local average of animes
