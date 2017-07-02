@@ -5,7 +5,6 @@ import traceback
 import sys
 import discord
 
-# TODO command.on.error eklenecek.
 
 extension = [
             'cogs.counter',
@@ -49,6 +48,7 @@ async def on_command_error(error, ctx):
         print('{0.__class__.__name__}: {0}'.format(error.original), file=sys.stderr)
     elif isinstance(error, discord.HTTPException):
         await bot.send_message(ctx.message.author, 'Connection error.')
+
 
 @bot.event
 async def on_member_join(member):
