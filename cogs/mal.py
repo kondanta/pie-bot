@@ -4,6 +4,7 @@ import requests
 import discord
 import json
 
+
 f = open('info.json')
 data = json.load(f)
 credentials = data['user'] + ":" + data['pass']
@@ -107,7 +108,7 @@ class Mal:
         except IndexError:
             await self.bot.say("I cannot find the user")
 
-    @mal.command(pass_context=True, usage=".mal anime anime-name")
+    @mal.command(pass_context=True, usage=".mal anime manga-name")
     async def anime(self, ctx, *args):
         # typedefs
         title_list = []
@@ -165,11 +166,11 @@ class Mal:
 
         # message that printed with the list
         msg = "**Please chose one, by its number..**\n"
-        msg += "\n ".join(['{} - {}'.format(n + 1, title_list[n]) for n in range(0, len(title_list))])
-
-        await self.bot.say(msg)
+        msg += "\n ".join(['{} - {}'.format(n + 1, title_list[n]) for n in range(0, 10)])
 
         try:
+            # printing the list itself
+            await self.bot.say(msg)
             # it waits for the response after printing the table
             resp = await self.bot.wait_for_message(author=ctx.message.author, timeout=5)
             # resp returns with message object, so I'm changing it's type to string
@@ -177,7 +178,8 @@ class Mal:
             entry = int(resp.content) - 1
             text = synop_list[0].replace('<br />', ' ').replace('&#039;', "'").replace('[i]', '*').replace('[/i]',
                                                                                                            '*').replace(
-                '&mdash;', '—').replace('&quot;', '"')
+                '&mdash;', '—').replace('&quot;', '"').replace('[size=90]', '').replace('[/size]', '').replace('[b]', '**').replace('[/b]', '**')
+
             embed = discord.Embed(title=' ', description=text, color=0x0000ff, timestamp=ctx.message.timestamp)
             embed.set_author(name=title_list[entry], icon_url=images[entry])
             embed.add_field(name="*Type*", value=tur[entry])
@@ -198,6 +200,8 @@ class Mal:
             await self.bot.say("Please enter a number")
         except AttributeError:
             await self.bot.say("**Time is up! Please try again... :cry:**")
+        except discord.HTTPException:
+            await self.bot.say("Connection Error")
 
     @mal.command(pass_context=True)
     async def manga(self, ctx, *args):
@@ -257,11 +261,11 @@ class Mal:
 
         # message that printed with the list
         msg = "**Please chose one, by its number..**\n"
-        msg += "\n ".join(['{} - {}'.format(n + 1, title_list[n]) for n in range(0, len(title_list))])
-
-        await self.bot.say(msg)
+        msg += "\n ".join(['{} - {}'.format(n + 1, title_list[n]) for n in range(0, 10)])
 
         try:
+            # printing the list itself
+            await self.bot.say(msg)
             # it waits for the response after printing the table
             resp = await self.bot.wait_for_message(author=ctx.message.author, timeout=5)
             # resp returns with message object, so I'm changing it's type to string
@@ -269,7 +273,7 @@ class Mal:
             entry = int(resp.content) - 1
             text = synop_list[0].replace('<br />', ' ').replace('&#039;', "'").replace('[i]', '*').replace('[/i]',
                                                                                                            '*').replace(
-                '&mdash;', '—').replace('&quot;', '"')
+                '&mdash;', '—').replace('&quot;', '"').replace('[size=90]', '').replace('[/size]', '').replace('[b]', '**').replace('[/b]', '**')
             embed = discord.Embed(title=' ', description=text, color=0x0000ff, timestamp=ctx.message.timestamp)
             embed.set_author(name=title_list[entry], icon_url=images[entry])
             embed.add_field(name="*Type*", value=tur[entry])
@@ -290,6 +294,8 @@ class Mal:
             await self.bot.say("Please enter a number")
         except AttributeError:
             await self.bot.say("**Time is up! Please try again... :cry:**")
+        except discord.HTTPException:
+            await self.bot.say("Connection Error")
 
 def setup(bot):
     bot.add_cog(Mal(bot))

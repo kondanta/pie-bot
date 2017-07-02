@@ -47,7 +47,8 @@ async def on_command_error(error, ctx):
         print('In {0.command.qualified_name}:'.format(ctx), file=sys.stderr)
         traceback.print_tb(error.original.__traceback__)
         print('{0.__class__.__name__}: {0}'.format(error.original), file=sys.stderr)
-
+    elif isinstance(error, discord.HTTPException):
+        await bot.send_message(ctx.message.author, 'Connection error.')
 
 @bot.event
 async def on_member_join(member):
