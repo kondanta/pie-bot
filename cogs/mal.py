@@ -164,9 +164,14 @@ class Mal:
         for i in soup.find_all('end_date'):
             end_date.append(i.text)
 
+        if len(title_list) >= 10:
+            table_to_ten = [i for i in title_list[:10]]
+        else:
+            table_to_ten = title_list
+
         # message that printed with the list
         msg = "**Please chose one, by its number..**\n"
-        msg += "\n ".join(['{} - {}'.format(n + 1, title_list[n]) for n in range(0, 10)])
+        msg += "\n ".join(['{} - {}'.format(n + 1, table_to_ten[n]) for n in range(0, len(table_to_ten))])
 
         try:
             # printing the list itself
@@ -259,9 +264,14 @@ class Mal:
         for i in soup.find_all('end_date'):
             end_date.append(i.text)
 
+        if len(title_list) >= 10:
+            table_to_ten = [i for i in title_list[:10]]
+        else:
+            table_to_ten = title_list
+
         # message that printed with the list
         msg = "**Please chose one, by its number..**\n"
-        msg += "\n ".join(['{} - {}'.format(n + 1, title_list[n]) for n in range(0, 10)])
+        msg += "\n ".join(['{} - {}'.format(n + 1, table_to_ten[n]) for n in range(0, len(table_to_ten))])
 
         try:
             # printing the list itself
@@ -291,7 +301,7 @@ class Mal:
         except ValueError:
             await self.bot.say("Please enter a number")
         except UnboundLocalError:
-            await self.bot.say("Please enter a number")
+            await self.bot.say("Please enter a number that shown on the list")
         except AttributeError:
             await self.bot.say("**Time is up! Please try again... :cry:**")
         except discord.HTTPException:
