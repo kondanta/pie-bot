@@ -13,7 +13,8 @@ extension = [
             'cogs.react',
             'cogs.utils.purge',
             'cogs.info',
-            'cogs.mal'
+            'cogs.mal',
+            'cogs.reminder'
 ]
 
 discord_logger = logging.getLogger('discord')

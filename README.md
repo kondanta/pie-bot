@@ -12,7 +12,7 @@ A simple bot
 - [x] MyAnimeList profile
 - [x] MyAnimeList API -> anime search
 - [x] MyAnimeList API -> manga search
-- [ ] Reminder
+- [x] Reminder
 - [ ] DB integration
 	- [ ] Local average of animes
 		- Example: ![alt text](https://image.prntscr.com/image/7mXbLeRQTzO1C5lGnLUVqg.png "Example photo")

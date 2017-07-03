@@ -1,5 +1,9 @@
 from discord.ext import commands
 import discord
+import copy
+from collections import Counter
+import inspect
+
 
 
 class Info:
@@ -11,10 +15,14 @@ class Info:
         if ctx.invoked_subcommand is None:
             await self.bot.say('Invalid use of command')
 
+        # channel = ctx.message.channel
+
+
     # TODO Gerekli gorursem info serveri tekrar implement ederim
 
-    @info.command(pass_context=True)
+    @info.command(pass_context=True, no_pm=True)
     async def user(self, ctx):
+
         if not ctx.message.mentions:
             user = ctx.message.author
         else:
@@ -45,6 +53,51 @@ class Info:
         embed.set_thumbnail(url=user.avatar_url)
         await self.bot.say(embed=embed)
         await self.bot.say('👌')
+
+    @info.command(name='server', pass_context=True, no_pm=True)
+    async def server_info(self, ctx):
+        server = ctx.message.server
+        roles = [role.name.replace('@', '@\u200b') for role in server.roles]  # gathers sw roles
+
+        secret_member = copy.copy(server.me)
+        secret_member.id = '0'
+        secret_member.roles = [server.default_role]
+
+        # checking secret channels
+        secret_channels = 0
+        secret_voice = 0
+        text_channels = 0
+        for channel in server.channels:
+            perms = channel.permissions_for(secret_member)
+            is_text = channel.type == discord.ChannelType.text
+            text_channels += is_text
+            if is_text and not perms.read_messages:
+                secret_channels += 1
+            elif not is_text and (not perms.connect or not perms.speak):
+                secret_voice += 1
+
+        voice_channels = len(server.channels) - text_channels
+        member_by_status = Counter(str(m.status) for m in server.members)
+        e = discord.Embed()
+        e.title = 'Info for ' + server.name
+        e.add_field(name='ID', value=server.id)
+        e.add_field(name='Owner', value=server.owner)
+        if server.icon:
+            e.set_thumbnail(url=server.icon_url)
+        if server.splash:
+            e.set_image(url=server.splash_url)
+        e.add_field(name='Partnered?', value='Yes' if len(server.features) >= 3 else 'No')
+        fmt = 'Text %s (%s secret)\nVoice %s (%s locked)'
+        e.add_field(name='Channels', value=fmt % (text_channels, secret_channels, voice_channels, secret_voice))
+        fmt = 'Total: {0}\nOnline: {1[online]}' \
+              ', Offline: {1[offline]}' \
+              '\nDnD: {1[dnd]}' \
+              ', Idle: {1[idle]}'
+        e.add_field(name='Members', value=fmt.format(server.member_count, member_by_status))
+        e.add_field(name='Roles', value=', '.join(roles) if len(roles) < 10 else '%s roles' % len(roles))
+        e.set_footer(text='Provided by Pie Kek').timestamp = server.created_at
+        await self.bot.say(embed=e)
+
 
 
 def setup(bot):
