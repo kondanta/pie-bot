@@ -24,7 +24,7 @@ class Mal:
         if ctx.invoked_subcommand is None:
             await self.bot.say('https://myanimelist.net/profile/kondanta')
 
-    @mal.command(pass_context=True)
+    @mal.command(pass_context=True, description="Shows mal profile", usage=".mal profile profilename")
     async def profile(self, ctx, arg: str):
         conn = PROFILE_URL + arg
         anime_manga_info = []  # collecting anime manga, first 6 elements
@@ -318,6 +318,6 @@ class Mal:
         except discord.HTTPException:
             await self.bot.say("Connection Error")
 
-
+            
 def setup(bot):
     bot.add_cog(Mal(bot))
