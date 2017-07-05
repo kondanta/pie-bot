@@ -4,7 +4,6 @@ import copy
 from collections import Counter
 
 
-
 class Info:
     def __init__(self, bot):
         self.bot = bot
@@ -96,7 +95,6 @@ class Info:
         e.add_field(name='Roles', value=', '.join(roles) if len(roles) < 10 else '%s roles' % len(roles))
         e.set_footer(text='Provided by Pie Kek').timestamp = server.created_at
         await self.bot.say(embed=e)
-
 
 
 def setup(bot):

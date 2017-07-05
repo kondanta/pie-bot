@@ -105,7 +105,7 @@ class Mal:
         except TypeError:
             await self.bot.say("Skipping")
         except IndexError:
-            await self.bot.say("I cannot find the user")
+            await self.bot.say("I couldn't find any usable information about this user.")
 
     @mal.command(pass_context=True, usage=".mal anime manga-name")
     async def anime(self, ctx, *args):
