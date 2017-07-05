@@ -18,7 +18,7 @@ extension = [
 ]
 
 discord_logger = logging.getLogger('discord')
-discord_logger.setLevel(logging.CRITICAL)
+discord_logger.setLevel(logging.ERROR)
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='Pie.log', encoding='utf-8', mode='w')

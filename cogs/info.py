@@ -20,6 +20,10 @@ class Info:
 
     @info.command(pass_context=True, no_pm=True)
     async def user(self, ctx):
+        """
+        :param ctx:
+        :return:
+        """
 
         if not ctx.message.mentions:
             user = ctx.message.author
@@ -54,6 +58,10 @@ class Info:
 
     @info.command(name='server', pass_context=True, no_pm=True)
     async def server_info(self, ctx):
+        """
+        :param ctx:
+        :return:
+        """
         server = ctx.message.server
         roles = [role.name.replace('@', '@\u200b') for role in server.roles]  # gathers sw roles
 
@@ -76,7 +84,7 @@ class Info:
 
         voice_channels = len(server.channels) - text_channels
         member_by_status = Counter(str(m.status) for m in server.members)
-        e = discord.Embed()
+        e = discord.Embed(color=0xff0000)
         e.title = 'Info for ' + server.name
         e.add_field(name='ID', value=server.id)
         e.add_field(name='Owner', value=server.owner)

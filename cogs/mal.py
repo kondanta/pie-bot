@@ -66,6 +66,10 @@ class Mal:
             test_list = [splitter(i) for i in anime_manga_status]
             anime_manga_status = [listintolist(i) for i in test_list]
 
+            # That means, user has lack of anime, or manga updates.
+            if len(anime_manga_status) < 6:
+                raise IndexError
+
             anime_msg = '{}:  {},  {}.  {} : {}\n' \
                         '{}:  {},  {}.  {} : {}\n' \
                         '{}:  {},  {}.  {} : {}\n'.format(anime_manga_info[0], anime_manga_status[0][0],
@@ -105,7 +109,10 @@ class Mal:
         except TypeError:
             await self.bot.say("Skipping")
         except IndexError:
-            await self.bot.say("I couldn't find any usable information about this user.")
+            msg = "This user has not got enough information to show." \
+                  "Please check the profile page directly." \
+                  "{}".format(conn)
+            await self.bot.say(msg)
 
     @mal.command(pass_context=True, usage=".mal anime manga-name")
     async def anime(self, ctx, *args):
@@ -137,7 +144,7 @@ class Mal:
         r = requests.get(conn)
         soup = bs(r.content, 'lxml')
 
-        # loops for gathering related informations
+        # loops for gathering related information
         for i in soup.find_all('title'):
             title_list.append(i.text)
 
