@@ -8,7 +8,7 @@ class Deletion:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, usage="purge `number`")
     @check.mod_or_permissions(manage_messages=True)
     async def purge(self, ctx, arg: int):
         try:
