@@ -18,7 +18,7 @@ class Reaction:
             return e.startswith(('👍', '👎'))
 
         await asyncio.sleep(1)
-        res = await (self.bot.wait_for_reaction(message=msg,check=checks,))
+        res = await (self.bot.wait_for_reaction(message=msg, check=checks,))
         await self.bot.send_message(ctx.message.channel, '{0.user.mention} reacted with {0.reaction.emoji}!'.format(res))
 
 

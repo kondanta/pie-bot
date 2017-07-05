@@ -52,15 +52,6 @@ class ModFuncs:
         else:
             await self.bot.say('👌')
 
-    @commands.command(pass_context=True, no_pm=True)
-    @check.admin_or_permissions()
-    async def color(self, ctx, colour):
-        try:
-            await self.bot.edit_role(colour=ctx.message.server,)
-        except discord.HTTPException:
-            await self.bot.say('The bot must have Manage Roles permissions to use this and its role must be higher.')
-        else:
-            await self.bot.say('👌')
 
 
 def setup(bot):

@@ -31,7 +31,7 @@ class TimeParser:
         if self.seconds <= 0:
             raise commands.BadArgument('Bad time provided.')
 
-        if self.seconds > 604800: # 7 days
+        if self.seconds > 604800:  # 7 days
             raise commands.BadArgument('That\'s a bit too far in the future for me.')
 
 
