@@ -14,7 +14,8 @@ extension = [
             'cogs.utils.purge',
             'cogs.info',
             'cogs.mal',
-            'cogs.reminder'
+            'cogs.reminder',
+            'cogs.jisho'
 ]
 
 discord_logger = logging.getLogger('discord')
