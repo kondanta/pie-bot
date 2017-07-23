@@ -41,7 +41,7 @@ class Reminder:
 
     @commands.command(pass_context=True, usage=".reminder time text")
     async def reminder(self, ctx, time: TimeParser, *, message=''):
-
+        """Self explanatory.."""
         author = ctx.message.author
         reminder = None
         completed = None

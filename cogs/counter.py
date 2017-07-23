@@ -8,6 +8,7 @@ class MsgCounter:
 
     @commands.command(pass_context=True,)
     async def count(self, ctx):
+        """counts the messages of mentioned user."""
         try:
             if not ctx.message.mentions:
                 user = ctx.message.author

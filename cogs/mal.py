@@ -26,6 +26,7 @@ class Mal:
 
     @mal.command(pass_context=True, description="Shows mal profile", usage=".mal profile profilename")
     async def profile(self, ctx, arg: str):
+        """prints myanimelist profile"""
         conn = PROFILE_URL + arg
         anime_manga_info = []  # collecting anime manga, first 6 elements
         user_img = []
@@ -149,8 +150,9 @@ class Mal:
             #           "{}".format(conn)
             #     await self.bot.say(msg)
 
-    @mal.command(pass_context=True, usage=".mal anime manga-name")
+    @mal.command(pass_context=True)
     async def anime(self, ctx, *args):
+        """Fetches the anime details from myanimelist"""
         # typedefs
         title_list = []
         synop_list = []
@@ -257,6 +259,7 @@ class Mal:
 
     @mal.command(pass_context=True)
     async def manga(self, ctx, *args):
+        """Fetches the manga details from myanimelist """
         # typedefs
         title_list = []
         synop_list = []
