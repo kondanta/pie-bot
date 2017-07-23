@@ -9,6 +9,10 @@ class Reaction:
 
     @commands.command(pass_context=True,)
     async def react(self, ctx):
+        """Hopefully I'll use this module in the future.
+            For now, It prompts thumbs up and down.
+            Tells which one you chose.
+        """
         msg = await (self.bot.send_message(ctx.message.channel, 'Use the emojis :thumbsup: and :thumbsdown:'))
         await self.bot.add_reaction(msg, '👍')
         await self.bot.add_reaction(msg, '👎')

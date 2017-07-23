@@ -20,7 +20,7 @@ class Jisho:
 
     @commands.command(pass_context=True)
     async def jisho(self, ctx, arg: str):
-        '''Quick Look up from Jisho.org'''
+        """Quick Look up from Jisho.org"""
         japanese_words = []
         readings = []
         meanings = []

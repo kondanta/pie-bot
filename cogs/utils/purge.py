@@ -11,6 +11,8 @@ class Deletion:
     @commands.command(pass_context=True, usage="purge `number`")
     @check.mod_or_permissions(manage_messages=True)
     async def purge(self, ctx, arg: int):
+        """Deletes the messages: Limited -> Deletes only messages that are under 14 days old.
+        """
         try:
             msg = ctx.message
             deleted = await (self.bot.purge_from(msg.channel, limit=arg))

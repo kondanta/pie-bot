@@ -26,6 +26,7 @@ class Mal:
 
     @mal.command(pass_context=True, description="Shows mal profile", usage=".mal profile profilename")
     async def profile(self, ctx, arg: str):
+        """prints myanimelist profile"""
         conn = PROFILE_URL + arg
         anime_manga_info = []  # collecting anime manga, first 6 elements
         user_img = []
@@ -52,7 +53,12 @@ class Mal:
             for i in soup.find_all('div', attrs={'class': 'fn-grey2'}, limit=6):
                 x = i.text
                 anime_manga_status.append(x)
-
+        except IndexError:
+            msg = "This user has not got enough information to show." \
+                  "Please check the profile page directly." \
+                  "{}".format(conn)
+            await self.bot.say(msg)
+        try:
             # 2 basic function for handling the array.
             def splitter(s):  # makes array ['xy', 'yz']
                 return ' '.join(s.split())
@@ -65,10 +71,6 @@ class Mal:
 
             test_list = [splitter(i) for i in anime_manga_status]
             anime_manga_status = [listintolist(i) for i in test_list]
-
-            # That means, user has lack of anime, or manga updates.
-            if len(anime_manga_status) < 6:
-                raise IndexError
 
             anime_msg = '{}:  {},  {}.  {} : {}\n' \
                         '{}:  {},  {}.  {} : {}\n' \
@@ -91,6 +93,40 @@ class Mal:
                                                           anime_manga_info[5], anime_manga_status[5][0],
                                                           anime_manga_status[5][1], anime_manga_status[5][3],
                                                           anime_manga_status[5][4])
+            # when user lack of manga
+        except IndexError:
+            # status < 3 < 4 < 5 < 6
+            # if user has  < 3 anime updates i won't bother to check it
+            if len(anime_manga_status) < 3:
+                msg = "This user has not got enough information to show." \
+                          "Please check the profile page directly." \
+                          "{}".format(conn)
+                await self.bot.say(msg)
+
+            elif len(anime_manga_status) < 4:
+                manga_msg = '{}:  {},  {}.  {} : {}\n' \
+                            '{}:  {},  {}.  {} : {}\n' \
+                            '{}:  {},  {}.  {} : {}\n'.format("None", "None", "None", "None", "None", "None",
+                                                              "None", "None", "None", "None", "None",
+                                                              "None", "None", "None", "None")
+            elif len(anime_manga_status) < 5:
+                manga_msg = '{}:  {},  {}.  {} : {}\n' \
+                            '{}:  {},  {}.  {} : {}\n' \
+                            '{}:  {},  {}.  {} : {}\n'.format(anime_manga_info[3], anime_manga_status[3][0],
+                                                              anime_manga_status[3][1], anime_manga_status[3][3],
+                                                              anime_manga_status[3][4],
+                                                              "None", "None", "None", "None", "None", "None",
+                                                              "None", "None", "None", "None")
+            elif len(anime_manga_status) < 6:
+                manga_msg = '{}:  {},  {}.  {} : {}\n' \
+                            '{}:  {},  {}.  {} : {}\n' \
+                            '{}:  {},  {}.  {} : {}\n'.format(anime_manga_info[3], anime_manga_status[3][0],
+                                                              anime_manga_status[3][1], anime_manga_status[3][3],
+                                                              anime_manga_status[3][4], anime_manga_info[4],
+                                                              anime_manga_status[4][0], anime_manga_status[4][1],
+                                                              anime_manga_status[4][3], anime_manga_status[4][4], "None",
+                                                              "None", "None", "None", "None")
+        try:
 
             embed = discord.Embed(title="", description="Additional information", color=0x0000ff,
                                   timestamp=ctx.message.timestamp)
@@ -108,14 +144,15 @@ class Mal:
             await self.bot.say(embed=embed)
         except TypeError:
             await self.bot.say("Skipping")
-        except IndexError:
-            msg = "This user has not got enough information to show." \
-                  "Please check the profile page directly." \
-                  "{}".format(conn)
-            await self.bot.say(msg)
+            # except IndexError:
+            #     msg = "This user has not got enough information to show." \
+            #           "Please check the profile page directly." \
+            #           "{}".format(conn)
+            #     await self.bot.say(msg)
 
-    @mal.command(pass_context=True, usage=".mal anime manga-name")
+    @mal.command(pass_context=True)
     async def anime(self, ctx, *args):
+        """Fetches the anime details from myanimelist"""
         # typedefs
         title_list = []
         synop_list = []
@@ -196,7 +233,7 @@ class Mal:
             embed = discord.Embed(title=' ', description=text, color=0x0000ff, timestamp=ctx.message.timestamp)
             embed.set_author(name=title_list[entry], icon_url=images[entry])
             embed.add_field(name="*Type*", value=tur[entry])
-            embed.add_field(name="*Episodes*", value=ep[entry])
+            embed.add_field(name="*Volumes*", value=ep[entry])
             embed.add_field(name="*Status*", value=status[entry])
             embed.add_field(name="*Score*", value=score[entry])
             embed.add_field(name="*Link*", value=anime_id[entry])
@@ -222,6 +259,7 @@ class Mal:
 
     @mal.command(pass_context=True)
     async def manga(self, ctx, *args):
+        """Fetches the manga details from myanimelist """
         # typedefs
         title_list = []
         synop_list = []
@@ -233,6 +271,7 @@ class Mal:
         start_date = []
         end_date = []
         anime_id = []
+        chapters = []
 
         # checks if the argument is one , or multiple
         if len(args) >= 2:
@@ -269,7 +308,9 @@ class Mal:
             score.append(i.text)
         for i in soup.find_all('status'):
             status.append(i.text)
-        for i in soup.find_all('status'):
+        for i in soup.find_all('chapters'):
+            chapters.append(i.text)
+        for i in soup.find_all('volumes'):
             ep.append(i.text)
         for i in soup.find_all('start_date'):
             start_date.append(i.text)
@@ -301,16 +342,17 @@ class Mal:
             embed = discord.Embed(title=' ', description=text, color=0x0000ff, timestamp=ctx.message.timestamp)
             embed.set_author(name=title_list[entry], icon_url=images[entry])
             embed.add_field(name="*Type*", value=tur[entry])
-            embed.add_field(name="*Episodes*", value=ep[entry])
+            embed.add_field(name="*Volumes*", value=ep[entry])
+            embed.add_field(name="*Chapters*", value=chapters[entry])
             embed.add_field(name="*Status*", value=status[entry])
-            embed.add_field(name="*Score*", value=score[entry])
+            embed.add_field(name="*Score*", value=score[entry], inline=False)
             embed.add_field(name="*Link*", value=anime_id[entry])
             embed.set_thumbnail(url=images[entry])
 
             if end_date[entry] == '0000-00-00':
                 footer_msg = 'It is Currently Publishing '
             else:
-                footer_msg = 'Aired on ' + start_date[entry] + ' to ' + end_date[entry]
+                footer_msg = 'Published in ' + start_date[entry] + ' to ' + end_date[entry]
 
             embed.set_footer(text=footer_msg)
             await self.bot.say(embed=embed)
@@ -325,6 +367,6 @@ class Mal:
         except discord.HTTPException:
             await self.bot.say("Connection Error")
 
-            
+
 def setup(bot):
     bot.add_cog(Mal(bot))
